@@ -10,18 +10,20 @@ import WriteMode from "./WriteMode";
 import ListenMode from "./ListenMode";
 import { DatasetPicker, Stat } from "./components/SubComponents";
 import { useSRSState } from "@/lib/srs";
-import { DATASETS } from "@/lib/datasets/en_tr";
+// 👇 iki dataset’i farklı adlarla al
+import { DATASETS as EN_TR } from "@/lib/datasets/en_tr";
 import { DATASETS as TR_RU } from "@/lib/datasets/tr_ru";
 
-const DATASETS = {
+// 👇 çakışmayı önlemek için farklı isim
+const ALL_DATASETS = {
   en_tr: EN_TR.en_tr,
   tr_ru: TR_RU.tr_ru,
 };
 
 
 export default function TrainingPage() {
-  const [datasetKey, setDatasetKey] = useState<"en_tr">("en_tr");
-  const data = DATASETS[datasetKey];
+  const [datasetKey, setDatasetKey] = useState<"en_tr" | "tr_ru">("en_tr");
+  const data = ALL_DATASETS[datasetKey];          // 👈 burada ALL_DATASETS
   const srs = useSRSState(`lingua.srs.${datasetKey}`, data);
   const [tab, setTab] = useState<"mcq" | "write" | "listen">("mcq");
 

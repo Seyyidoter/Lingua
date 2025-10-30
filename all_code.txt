@@ -559,9 +559,11 @@ export function DatasetPicker({
         className="border rounded-md px-2 py-1 bg-transparent"
         value={value}
         onChange={(e) => onChange(e.target.value as DatasetKey)}
-      >
-        <option value="en_tr">English â†’ Turkish</option>
-      </select>
+    >
+  <option value="en_tr">English â†’ Turkish</option>
+  <option value="tr_ru">Turkish â†’ Russian</option>
+</select>
+
     </div>
   );
 }
@@ -589,10 +591,12 @@ export default function ListenMode({
   data,
   srs,
   onFinish,
+  datasetKey,
 }: {
   data: Item[];
   srs: SRSApi;
   onFinish: (ok: boolean, itemId: number) => void;
+  datasetKey: "en_tr" | "tr_ru";
 }) {
   const [lsn, setLsn] = useState<ListenState | null>(null);
   const [input, setInput] = useState("");
@@ -603,7 +607,7 @@ export default function ListenMode({
     setLsn({ item, done: false, ok: null });
     setInput("");
     setTimeout(() => inputRef.current?.focus(), 0);
-    setTimeout(() => speak(item.src, "en-US"), 50);
+    setTimeout(() => speak(item.src, datasetKey === "tr_ru" ? "tr-TR" : "en-US"), 50);
   };
 
   useEffect(() => {
@@ -807,11 +811,20 @@ import WriteMode from "./WriteMode";
 import ListenMode from "./ListenMode";
 import { DatasetPicker, Stat } from "./components/SubComponents";
 import { useSRSState } from "@/lib/srs";
-import { DATASETS } from "@/lib/datasets/en_tr";
+// ğŸ‘‡ iki datasetâ€™i farklÄ± adlarla al
+import { DATASETS as EN_TR } from "@/lib/datasets/en_tr";
+import { DATASETS as TR_RU } from "@/lib/datasets/tr_ru";
+
+// ğŸ‘‡ Ã§akÄ±ÅŸmayÄ± Ã¶nlemek iÃ§in farklÄ± isim
+const ALL_DATASETS = {
+  en_tr: EN_TR.en_tr,
+  tr_ru: TR_RU.tr_ru,
+};
+
 
 export default function TrainingPage() {
-  const [datasetKey, setDatasetKey] = useState<"en_tr">("en_tr");
-  const data = DATASETS[datasetKey];
+  const [datasetKey, setDatasetKey] = useState<"en_tr" | "tr_ru">("en_tr");
+  const data = ALL_DATASETS[datasetKey];          // ğŸ‘ˆ burada ALL_DATASETS
   const srs = useSRSState(`lingua.srs.${datasetKey}`, data);
   const [tab, setTab] = useState<"mcq" | "write" | "listen">("mcq");
 
@@ -898,7 +911,7 @@ export default function TrainingPage() {
           </TabsContent>
 
           <TabsContent value="listen">
-            <ListenMode data={data} srs={srs} onFinish={finishQuestion} />
+            <ListenMode data={data} srs={srs} onFinish={finishQuestion} datasetKey={datasetKey} />
           </TabsContent>
         </Tabs>
 
