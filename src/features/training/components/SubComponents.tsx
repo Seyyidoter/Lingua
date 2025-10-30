@@ -52,9 +52,11 @@ export function DatasetPicker({
         className="border rounded-md px-2 py-1 bg-transparent"
         value={value}
         onChange={(e) => onChange(e.target.value as DatasetKey)}
-      >
-        <option value="en_tr">English → Turkish</option>
-      </select>
+    >
+  <option value="en_tr">English → Turkish</option>
+  <option value="tr_ru">Turkish → Russian</option>
+</select>
+
     </div>
   );
 }

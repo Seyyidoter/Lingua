@@ -19,10 +19,12 @@ export default function ListenMode({
   data,
   srs,
   onFinish,
+  datasetKey,
 }: {
   data: Item[];
   srs: SRSApi;
   onFinish: (ok: boolean, itemId: number) => void;
+  datasetKey: "en_tr" | "tr_ru";
 }) {
   const [lsn, setLsn] = useState<ListenState | null>(null);
   const [input, setInput] = useState("");
@@ -33,7 +35,7 @@ export default function ListenMode({
     setLsn({ item, done: false, ok: null });
     setInput("");
     setTimeout(() => inputRef.current?.focus(), 0);
-    setTimeout(() => speak(item.src, "en-US"), 50);
+    setTimeout(() => speak(item.src, datasetKey === "tr_ru" ? "tr-TR" : "en-US"), 50);
   };
 
   useEffect(() => {

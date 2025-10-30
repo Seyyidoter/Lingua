@@ -568,6 +568,111 @@ export function DatasetPicker({
 //// ===== END: C:\Users\seyyid\lingua-write-web\src\features\training\components\SubComponents.tsx =====
 
 //// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\features\training\ListenMode.tsx =====
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Volume2, Keyboard } from "lucide-react";
+import { motion } from "framer-motion";
+
+import type { Item } from "@/lib/types";
+import type { SRSApi } from "@/lib/srs";
+import { fuzzyEq, hint, speak } from "@/lib/utils";
+import { Feedback } from "./components/SubComponents";
+
+type ListenState = { item: Item; done: boolean; ok: boolean | null };
+
+export default function ListenMode({
+  data,
+  srs,
+  onFinish,
+}: {
+  data: Item[];
+  srs: SRSApi;
+  onFinish: (ok: boolean, itemId: number) => void;
+}) {
+  const [lsn, setLsn] = useState<ListenState | null>(null);
+  const [input, setInput] = useState("");
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const generate = () => {
+    const item = srs.pickWeighted();
+    setLsn({ item, done: false, ok: null });
+    setInput("");
+    setTimeout(() => inputRef.current?.focus(), 0);
+    setTimeout(() => speak(item.src, "en-US"), 50);
+  };
+
+  useEffect(() => {
+    generate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.length]);
+
+  if (!lsn) return null;
+
+  const check = () => {
+    if (!lsn || lsn.done) return;
+    const ok = fuzzyEq(input, lsn.item.src);
+    onFinish(ok, lsn.item.id);
+    setLsn({ ...lsn, done: true, ok });
+  };
+
+  const next = () => generate();
+
+  return (
+    <Card className="backdrop-blur bg-white/40 border-none shadow-lg">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          Listen & Type (EN)
+          <Badge variant="secondary" className="ml-2">
+            Hint (TR): {lsn.item.dst}
+          </Badge>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="ml-auto"
+            onClick={() => speak(lsn.item.src, "en-US")}
+            title="Play pronunciation (EN)"
+          >
+            <Volume2 className="w-4 h-4" />
+          </Button>
+        </CardTitle>
+      </CardHeader>
+
+      <CardContent>
+        <motion.div
+          animate={lsn.done && lsn.ok === false ? { x: [0, -6, 6, -6, 6, 0] } : {}}
+          transition={{ duration: 0.4 }}
+          className="flex items-center gap-2"
+        >
+          <Input
+            ref={inputRef}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type what you hear (English)â€¦"
+            onKeyDown={(e) => e.key === "Enter" && check()}
+            disabled={lsn.done}
+          />
+          <Button onClick={check} disabled={lsn.done}>Check</Button>
+          <Button variant="secondary" onClick={next}>Next</Button>
+        </motion.div>
+
+        <div className="mt-3">
+          {lsn.done ? (
+            <Feedback ok={!!lsn.ok} correct={lsn.item.src} hint={hint(input, lsn.item.src)} />
+          ) : (
+            <span className="text-sm text-muted-foreground flex items-center gap-2">
+              <Keyboard className="w-4 h-4" /> Press the speaker, then type the English word/phrase.
+            </span>
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 //// ===== END: C:\Users\seyyid\lingua-write-web\src\features\training\ListenMode.tsx =====
 
 //// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\features\training\McqMode.tsx =====
@@ -692,7 +797,7 @@ export default function McqMode({
 //// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\features\training\TrainingPage.tsx =====
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -710,14 +815,29 @@ export default function TrainingPage() {
   const srs = useSRSState(`lingua.srs.${datasetKey}`, data);
   const [tab, setTab] = useState<"mcq" | "write" | "listen">("mcq");
 
-  const [total, setTotal] = useState<number>(() => {
-    const v = localStorage.getItem(`lingua.total.${datasetKey}`);
-    return v ? Number(v) : 0;
-  });
-  const [correct, setCorrect] = useState<number>(() => {
-    const v = localStorage.getItem(`lingua.correct.${datasetKey}`);
-    return v ? Number(v) : 0;
-  });
+  // SSR gÃ¼venli baÅŸlangÄ±Ã§: Ã¶nce 0, mount'tan sonra localStorage'dan yÃ¼kle
+  const [total, setTotal] = useState<number>(0);
+  const [correct, setCorrect] = useState<number>(0);
+
+  // Dataset deÄŸiÅŸtiÄŸinde tarayÄ±cÄ±da deÄŸerleri oku
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const t = window.localStorage.getItem(`lingua.total.${datasetKey}`);
+    const c = window.localStorage.getItem(`lingua.correct.${datasetKey}`);
+    setTotal(t ? Number(t) : 0);
+    setCorrect(c ? Number(c) : 0);
+  }, [datasetKey]);
+
+  // total/correct deÄŸiÅŸince tarayÄ±cÄ±da yaz
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(`lingua.total.${datasetKey}`, String(total));
+  }, [datasetKey, total]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.localStorage.setItem(`lingua.correct.${datasetKey}`, String(correct));
+  }, [datasetKey, correct]);
 
   const accuracy = total ? Math.round((100 * correct) / total) : 0;
 
@@ -725,12 +845,14 @@ export default function TrainingPage() {
     setTotal((t) => t + 1);
     setCorrect((c) => c + (ok ? 1 : 0));
     srs.bump(itemId, ok);
-    localStorage.setItem(`lingua.total.${datasetKey}`, String(total + 1));
-    localStorage.setItem(`lingua.correct.${datasetKey}`, String(correct + (ok ? 1 : 0)));
+    // localStorage'a yazma iÅŸini yukarÄ±daki useEffect'ler yapÄ±yor
   }
 
   function resetProgress() {
-    localStorage.clear();
+    if (typeof window === "undefined") return;
+    window.localStorage.removeItem(`lingua.srs.${datasetKey}`);
+    window.localStorage.removeItem(`lingua.total.${datasetKey}`);
+    window.localStorage.removeItem(`lingua.correct.${datasetKey}`);
     window.location.reload();
   }
 
@@ -760,11 +882,11 @@ export default function TrainingPage() {
           </CardContent>
         </Card>
 
-        <Tabs value={tab} onValueChange={(v) => setTab(v as any)}>
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "mcq" | "write" | "listen")}>
           <TabsList className="mb-4 flex gap-2 bg-white/40 backdrop-blur rounded-lg p-1">
             <TabsTrigger value="mcq">Multiple Choice</TabsTrigger>
             <TabsTrigger value="write">Type the Answer</TabsTrigger>
-            <TabsTrigger value="listen">Listen & Type</TabsTrigger>
+            <TabsTrigger value="listen">Listen &amp; Type</TabsTrigger>
           </TabsList>
 
           <TabsContent value="mcq">
@@ -928,6 +1050,26 @@ export const DATASETS: Record<DatasetKey, Item[]> = {
 };
 //// ===== END: C:\Users\seyyid\lingua-write-web\src\lib\datasets\en_tr.ts =====
 
+//// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\lib\datasets\tr_ru.ts =====
+// src/lib/datasets/tr_ru.ts
+import { DatasetKey, Item } from "@/lib/types";
+
+export const DATASETS: Record<DatasetKey, Item[]> = {
+  tr_ru: [
+    { id: 1, src: "elma", dst: "ÑĞ±Ğ»Ğ¾ĞºĞ¾", pos: "noun" },
+    { id: 2, src: "ekmek", dst: "Ñ…Ğ»ĞµĞ±", pos: "noun" },
+    { id: 3, src: "su", dst: "Ğ²Ğ¾Ğ´Ğ°", pos: "noun" },
+    { id: 4, src: "yemek", dst: "ĞµÑÑ‚ÑŒ", pos: "verb" },
+    { id: 5, src: "iÃ§mek", dst: "Ğ¿Ğ¸Ñ‚ÑŒ", pos: "verb" },
+    { id: 6, src: "kedi", dst: "ĞºĞ¾Ñ‚", pos: "noun" },
+    { id: 7, src: "kÃ¶pek", dst: "ÑĞ¾Ğ±Ğ°ĞºĞ°", pos: "noun" },
+    { id: 8, src: "ev", dst: "Ğ´Ğ¾Ğ¼", pos: "noun" },
+    { id: 9, src: "bÃ¼yÃ¼k", dst: "Ğ±Ğ¾Ğ»ÑŒÑˆĞ¾Ğ¹", pos: "adj" },
+    { id: 10, src: "kÃ¼Ã§Ã¼k", dst: "Ğ¼Ğ°Ğ»ĞµĞ½ÑŒĞºĞ¸Ğ¹", pos: "adj" },
+  ],
+};
+//// ===== END: C:\Users\seyyid\lingua-write-web\src\lib\datasets\tr_ru.ts =====
+
 //// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\lib\srs.ts =====
 // src/lib/srs.ts
 "use client";
@@ -984,11 +1126,21 @@ export function useSRSState(key: string, items: Item[]): SRSApi {
 //// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\lib\types.ts =====
 // src/lib/types.ts
 export type Item = { id: number; src: string; dst: string; pos?: string };
-export type DatasetKey = "en_tr";
+export type DatasetKey = "en_tr" | "tr_ru";
+
 //// ===== END: C:\Users\seyyid\lingua-write-web\src\lib\types.ts =====
 
 //// ===== BEGIN: C:\Users\seyyid\lingua-write-web\src\lib\utils.ts =====
 // src/lib/utils.ts
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
+
+// --- shadcn/ui'nin beklediÄŸi yardÄ±mcÄ±:
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
+// --- senin util'larÄ±n:
 export function levenshtein(a = "", b = ""): number {
   a = a.toLowerCase().trim();
   b = b.toLowerCase().trim();

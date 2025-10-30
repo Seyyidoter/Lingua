@@ -11,6 +11,13 @@ import ListenMode from "./ListenMode";
 import { DatasetPicker, Stat } from "./components/SubComponents";
 import { useSRSState } from "@/lib/srs";
 import { DATASETS } from "@/lib/datasets/en_tr";
+import { DATASETS as TR_RU } from "@/lib/datasets/tr_ru";
+
+const DATASETS = {
+  en_tr: EN_TR.en_tr,
+  tr_ru: TR_RU.tr_ru,
+};
+
 
 export default function TrainingPage() {
   const [datasetKey, setDatasetKey] = useState<"en_tr">("en_tr");
@@ -101,7 +108,7 @@ export default function TrainingPage() {
           </TabsContent>
 
           <TabsContent value="listen">
-            <ListenMode data={data} srs={srs} onFinish={finishQuestion} />
+            <ListenMode data={data} srs={srs} onFinish={finishQuestion} datasetKey={datasetKey} />
           </TabsContent>
         </Tabs>
 
