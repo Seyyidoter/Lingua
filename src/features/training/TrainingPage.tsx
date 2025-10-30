@@ -10,14 +10,13 @@ import WriteMode from "./WriteMode";
 import ListenMode from "./ListenMode";
 import { DatasetPicker, Stat } from "./components/SubComponents";
 import { useSRSState } from "@/lib/srs";
-// 👇 iki dataset’i farklı adlarla al
-import { DATASETS as EN_TR } from "@/lib/datasets/en_tr";
-import { DATASETS as TR_RU } from "@/lib/datasets/tr_ru";
+import { EN_TR } from "@/lib/datasets/en_tr";
+import { TR_RU } from "@/lib/datasets/tr_ru";
+import type { DatasetKey, Item } from "@/lib/types";
 
-// 👇 çakışmayı önlemek için farklı isim
-const ALL_DATASETS = {
-  en_tr: EN_TR.en_tr,
-  tr_ru: TR_RU.tr_ru,
+const ALL_DATASETS: Record<DatasetKey, Item[]> = {
+  en_tr: EN_TR,
+  tr_ru: TR_RU,
 };
 
 
