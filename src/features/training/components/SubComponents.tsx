@@ -1,8 +1,9 @@
+// features/training/components/SubComponents.tsx
 "use client";
 
 import React from "react";
 import { Check, X } from "lucide-react";
-import type { DatasetKey } from "@/lib/types";
+import type { DatasetKey, CEFR } from "@/lib/types";
 
 export function Stat({ label, value }: { label: string; value: string }) {
   return (
@@ -14,14 +15,8 @@ export function Stat({ label, value }: { label: string; value: string }) {
 }
 
 export function Feedback({
-  ok,
-  correct,
-  hint,
-}: {
-  ok: boolean;
-  correct: string;
-  hint?: string;
-}) {
+  ok, correct, hint,
+}: { ok: boolean; correct: string; hint?: string }) {
   return (
     <div className="flex items-center gap-3 text-sm">
       {ok ? (
@@ -39,24 +34,73 @@ export function Feedback({
 }
 
 export function DatasetPicker({
-  value,
-  onChange,
-}: {
-  value: DatasetKey;
-  onChange: (v: DatasetKey) => void;
-}) {
+  value, onChange,
+}: { value: DatasetKey; onChange: (v: DatasetKey) => void }) {
   return (
     <div className="flex items-center gap-2">
-      <label className="text-sm text-muted-foreground">Dataset</label>
+      <label className="text-sm text-muted-foreground">Pair</label>
       <select
         className="border rounded-md px-2 py-1 bg-transparent"
         value={value}
         onChange={(e) => onChange(e.target.value as DatasetKey)}
-    >
-  <option value="en_tr">English → Turkish</option>
-  <option value="tr_ru">Turkish → Russian</option>
-</select>
+      >
+        <option value="en_tr">English ↔ Turkish</option>
+        <option value="tr_ru">Turkish ↔ Russian</option>
+      </select>
+    </div>
+  );
+}
 
+export function DirectionPicker({
+  value, onChange, datasetKey,
+}: {
+  value: "forward" | "reverse";
+  onChange: (v: "forward" | "reverse") => void;
+  datasetKey: DatasetKey;
+}) {
+  const labels =
+    datasetKey === "en_tr"
+      ? { forward: "EN → TR", reverse: "TR → EN" }
+      : { forward: "TR → RU", reverse: "RU → TR" };
+
+  return (
+    <div className="flex items-center gap-2">
+      <label className="text-sm text-muted-foreground">Direction</label>
+      <select
+        className="border rounded-md px-2 py-1 bg-transparent"
+        value={value}
+        onChange={(e) => onChange(e.target.value as "forward" | "reverse")}
+      >
+        <option value="forward">{labels.forward}</option>
+        <option value="reverse">{labels.reverse}</option>
+      </select>
+    </div>
+  );
+}
+
+/** CEFR seviye seçici */
+export function LevelPicker({
+  value, onChange,
+}: {
+  value: CEFR | "ALL";
+  onChange: (v: CEFR | "ALL") => void;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <label className="text-sm text-muted-foreground">Level</label>
+      <select
+        className="border rounded-md px-2 py-1 bg-transparent"
+        value={value}
+        onChange={(e) => onChange(e.target.value as CEFR | "ALL")}
+      >
+        <option value="ALL">ALL</option>
+        <option value="A1">A1</option>
+        <option value="A2">A2</option>
+        <option value="B1">B1</option>
+        <option value="B2">B2</option>
+        <option value="C1">C1</option>
+        <option value="C2">C2</option>
+      </select>
     </div>
   );
 }

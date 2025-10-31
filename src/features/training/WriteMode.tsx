@@ -12,21 +12,33 @@ import type { Item } from "@/lib/types";
 import type { SRSApi } from "@/lib/srs";
 import { fuzzyEq, hint, speak } from "@/lib/utils";
 import { Feedback } from "./components/SubComponents";
+import VirtualKeyboard from "./components/VirtualKeyboard";
 
 type WritingState = { item: Item; done: boolean; ok: boolean | null };
+
+const LABELS: Record<"en_tr" | "tr_ru", { src: string; dst: string; ttsSrc: string; ttsDst: string }> = {
+  en_tr: { src: "English", dst: "Turkish", ttsSrc: "en-US", ttsDst: "tr-TR" },
+  tr_ru: { src: "Turkish", dst: "Russian", ttsSrc: "tr-TR", ttsDst: "ru-RU" },
+};
 
 export default function WriteMode({
   data,
   srs,
   onFinish,
+  direction,
+  datasetKey,
 }: {
   data: Item[];
   srs: SRSApi;
   onFinish: (ok: boolean, itemId: number) => void;
+  direction: "forward" | "reverse";
+  datasetKey: "en_tr" | "tr_ru";
 }) {
   const [writing, setWriting] = useState<WritingState | null>(null);
   const [input, setInput] = useState<string>("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const labels = LABELS[datasetKey];
 
   const generateWriting = () => {
     const item = srs.pickWeighted();
@@ -38,33 +50,48 @@ export default function WriteMode({
   useEffect(() => {
     generateWriting();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data.length]);
+  }, [data, direction, datasetKey]);
+
+  if (!writing) return null;
+
+  // forward: src->dst, reverse: dst->src
+  const expected   = direction === "forward" ? writing.item.dst : writing.item.src;
+  const promptText = direction === "forward" ? writing.item.src : writing.item.dst;
+
+  const targetLabel = direction === "forward" ? labels.dst : labels.src; // "Translate to X"
+  const help = `Type the ${targetLabel} word or phrase.`;
+  const title = `Translate to ${targetLabel}`;
+
+  const ttsLang = direction === "forward" ? labels.ttsSrc : labels.ttsDst;
+
+  // Rusça hedefleniyorsa sanal klavyeyi göster
+  const showRuKeyboard = targetLabel === "Russian";
 
   const checkWriting = () => {
     if (!writing || writing.done) return;
-    const ok = fuzzyEq(input, writing.item.src);
+    const ok = fuzzyEq(input, expected);
     onFinish(ok, writing.item.id);
     setWriting({ ...writing, done: true, ok });
   };
 
   const nextWriting = () => generateWriting();
 
-  if (!writing) return null;
+  // Klavye tıklamaları
+  const appendText = (t: string) => setInput((prev) => prev + t);
+  const backspace  = () => setInput((prev) => prev.slice(0, -1));
 
   return (
     <Card className="backdrop-blur bg-white/40 border-none shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          Translate to English
-          <Badge variant="secondary" className="ml-2">
-            {writing.item.dst}
-          </Badge>
+          {title}
+          <Badge variant="secondary" className="ml-2">{promptText}</Badge>
           <Button
             size="icon"
             variant="ghost"
             className="ml-auto"
-            onClick={() => speak(writing.item.dst, "tr-TR")}
-            title="Play pronunciation (TR)"
+            onClick={() => speak(promptText, ttsLang)}
+            title="Play pronunciation"
           >
             <Volume2 className="w-4 h-4" />
           </Button>
@@ -73,11 +100,7 @@ export default function WriteMode({
 
       <CardContent>
         <motion.div
-          animate={
-            writing.done && writing.ok === false
-              ? { x: [0, -6, 6, -6, 6, 0] } // "shake" animasyonu
-              : {}
-          }
+          animate={writing.done && writing.ok === false ? { x: [0, -6, 6, -6, 6, 0] } : {}}
           transition={{ duration: 0.4 }}
           className="flex items-center gap-2"
         >
@@ -89,24 +112,25 @@ export default function WriteMode({
             onKeyDown={(e) => e.key === "Enter" && checkWriting()}
             disabled={writing.done}
           />
-          <Button onClick={checkWriting} disabled={writing.done}>
-            Check
-          </Button>
-          <Button variant="secondary" onClick={nextWriting}>
-            Next
-          </Button>
+          <Button onClick={checkWriting} disabled={writing.done}>Check</Button>
+          <Button variant="secondary" onClick={nextWriting}>Next</Button>
         </motion.div>
+
+        {showRuKeyboard && !writing.done && (
+          <VirtualKeyboard
+            onText={appendText}
+            onBackspace={backspace}
+            onEnter={checkWriting}
+            className="mt-2"
+          />
+        )}
 
         <div className="mt-3">
           {writing.done ? (
-            <Feedback
-              ok={!!writing.ok}
-              correct={writing.item.src}
-              hint={hint(input, writing.item.src)}
-            />
+            <Feedback ok={!!writing.ok} correct={expected} hint={hint(input, expected)} />
           ) : (
             <span className="text-sm text-muted-foreground flex items-center gap-2">
-              <Keyboard className="w-4 h-4" /> Type the English word or phrase.
+              <Keyboard className="w-4 h-4" /> {help}
             </span>
           )}
         </div>

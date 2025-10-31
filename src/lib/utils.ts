@@ -1,13 +1,13 @@
-// src/lib/utils.ts
+// Minimal utilities (no voice picker / caching)
+
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-// --- shadcn/ui'nin beklediği yardımcı:
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// --- senin util'ların:
+// ------------------- String utils -------------------
 export function levenshtein(a = "", b = ""): number {
   a = a.toLowerCase().trim();
   b = b.toLowerCase().trim();
@@ -52,11 +52,18 @@ export function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
+// ------------------- Simple TTS -------------------
 export function speak(text: string, lang = "en-US") {
   try {
+    if (typeof window === "undefined") return;
     const u = new SpeechSynthesisUtterance(text);
     u.lang = lang;
+    // dil bazlı küçük ayar (isteğe bağlı)
+    if (lang.startsWith("tr")) u.rate = 0.95;
+    if (lang.startsWith("ru")) u.rate = 0.95;
     window.speechSynthesis.cancel();
     window.speechSynthesis.speak(u);
-  } catch {}
+  } catch {
+    // no-op
+  }
 }
