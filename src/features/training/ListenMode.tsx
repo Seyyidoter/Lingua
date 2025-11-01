@@ -12,7 +12,7 @@ import type { Item } from "@/lib/types";
 import type { SRSApi } from "@/lib/srs";
 import { fuzzyEq, hint, speak } from "@/lib/utils";
 import { Feedback } from "./components/SubComponents";
-import VirtualKeyboard from "./components/VirtualKeyboard"; 
+import VirtualKeyboard from "./components/VirtualKeyboard";
 
 type ListenState = { item: Item; done: boolean; ok: boolean | null };
 
@@ -43,14 +43,14 @@ export default function ListenMode({
 
   const labels = LABELS[datasetKey];
 
-  // Listen&Type: DIKTE + BEKLENEN = HEP HEDEF DİL
-  const speakTextOf = (it: Item) => (direction === "forward" ? it.dst : it.src);
-  const speakLang = direction === "forward" ? labels.ttsDst : labels.ttsSrc;
-  const expectedOf = (it: Item) => (direction === "forward" ? it.dst : it.src);
-  const hintTextOf = (it: Item) => (direction === "forward" ? it.src : it.dst);
-  const listenLangLabel = direction === "forward" ? labels.dst : labels.src;
+  // Her zaman hedefi (dst) dikt edin, onu bekleyin; ipucu src
+  const speakTextOf = (it: Item) => it.dst;
+  const speakLang = direction === "forward" ? labels.ttsDst : labels.ttsSrc; // UI etiketi ile uyumlu
+  const expectedOf = (it: Item) => it.dst;
+  const hintTextOf = (it: Item) => it.src;
+  const listenLangLabel = direction === "forward" ? labels.dst : labels.src; // sadece yazı
 
-  // RU hedefleniyorsa klavyeyi aç
+  // Hedef Rusça ise klavye (TR→RU forward’ta)
   const showRuKeyboard = datasetKey === "tr_ru" && direction === "forward";
 
   const generate = () => {
@@ -72,7 +72,9 @@ export default function ListenMode({
   const title = `Listen & Type (${listenLangLabel.slice(0, 2).toUpperCase()})`;
   const placeholder = `Type what you hear (${listenLangLabel})…`;
   const helpText = `Press the speaker, then type the ${listenLangLabel} word/phrase.`;
-  const hintLabel = `Hint (${direction === "forward" ? labels.src : labels.dst})`;
+  const hintLabel = `Hint (${
+    direction === "forward" ? labels.src : labels.dst
+  })`;
   const hintText = hintTextOf(lsn.item);
 
   const dictationText = speakTextOf(lsn.item);
@@ -113,7 +115,9 @@ export default function ListenMode({
 
       <CardContent>
         <motion.div
-          animate={lsn.done && lsn.ok === false ? { x: [0, -6, 6, -6, 6, 0] } : {}}
+          animate={
+            lsn.done && lsn.ok === false ? { x: [0, -6, 6, -6, 6, 0] } : {}
+          }
           transition={{ duration: 0.4 }}
           className="flex items-center gap-2"
         >
@@ -147,7 +151,11 @@ export default function ListenMode({
 
         <div className="mt-3">
           {lsn.done ? (
-            <Feedback ok={!!lsn.ok} correct={expected} hint={hint(input, expected)} />
+            <Feedback
+              ok={!!lsn.ok}
+              correct={expected}
+              hint={hint(input, expected)}
+            />
           ) : (
             <span className="text-sm text-muted-foreground flex items-center gap-2">
               <Keyboard className="w-4 h-4" /> {helpText}

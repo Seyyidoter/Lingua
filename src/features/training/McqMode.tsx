@@ -19,7 +19,10 @@ type MCQState = {
   done: boolean;
 };
 
-const LABELS: Record<"en_tr" | "tr_ru", { src: string; dst: string; ttsSrc: string; ttsDst: string }> = {
+const LABELS: Record<
+  "en_tr" | "tr_ru",
+  { src: string; dst: string; ttsSrc: string; ttsDst: string }
+> = {
   en_tr: { src: "English", dst: "Turkish", ttsSrc: "en-US", ttsDst: "tr-TR" },
   tr_ru: { src: "Turkish", dst: "Russian", ttsSrc: "tr-TR", ttsDst: "ru-RU" },
 };
@@ -42,7 +45,8 @@ export default function McqMode({
 
   const safePick = (): Item | undefined => {
     // SRS’ten almayı dene
-    const picked = typeof srs.pickWeighted === "function" ? srs.pickWeighted() : undefined;
+    const picked =
+      typeof srs.pickWeighted === "function" ? srs.pickWeighted() : undefined;
     if (picked) return picked;
 
     // Fallback: dataset’ten rastgele
@@ -66,13 +70,15 @@ export default function McqMode({
       return;
     }
 
-    // forward: src -> dst, reverse: dst -> src
-    const promptText = direction === "forward" ? item.src : item.dst;
-    const correct = direction === "forward" ? item.dst : item.src;
+    // Artık her zaman: src = soru, dst = doğru cevap
+    const promptText = item.src;
+    const correct = item.dst;
 
-    // Şık havuzu: hedef dildeki kelimelerden
-    const pool = direction === "forward" ? data.map((d) => d.dst) : data.map((d) => d.src);
-    const wrongs = shuffle(pool.filter((x) => x !== correct)).slice(0, 3);
+    // Şık havuzu: her zaman hedef dil (dst)
+    const pool = data.map((d) => d.dst);
+    const wrongs = shuffle(
+      [...new Set(pool)].filter((x) => x !== correct) // küçük bir dedupe
+    ).slice(0, 3);
     const options = shuffle([correct, ...wrongs]);
 
     setMcq({ item, options, chosen: null, done: false });
@@ -100,13 +106,16 @@ export default function McqMode({
     );
   }
 
+  // UI etiketi (sadece yazı için)
   const targetLabel = direction === "forward" ? labels.dst : labels.src;
   const title = `Translate to ${targetLabel}`;
 
-  const promptText = direction === "forward" ? mcq.item.src : mcq.item.dst;
+  // LOJİK: her zaman src = soru, dst = doğru cevap
+  const promptText = mcq.item.src;
+  // TTS'de sorulan dilin sesi kullanılmalı
   const speakLang = direction === "forward" ? labels.ttsSrc : labels.ttsDst;
 
-  const correctAnswer = direction === "forward" ? mcq.item.dst : mcq.item.src;
+  const correctAnswer = mcq.item.dst;
 
   const chooseMCQ = (opt: string) => {
     if (!mcq || mcq.done) return;
@@ -168,9 +177,14 @@ export default function McqMode({
 
         <div className="mt-4 flex items-center gap-2">
           {mcq.done ? (
-            <Feedback ok={eq(mcq.chosen || "", correctAnswer)} correct={correctAnswer} />
+            <Feedback
+              ok={eq(mcq.chosen || "", correctAnswer)}
+              correct={correctAnswer}
+            />
           ) : (
-            <span className="text-sm text-muted-foreground">Choose the correct translation.</span>
+            <span className="text-sm text-muted-foreground">
+              Choose the correct translation.
+            </span>
           )}
           <div className="ml-auto">
             <Button variant="secondary" onClick={nextMCQ}>

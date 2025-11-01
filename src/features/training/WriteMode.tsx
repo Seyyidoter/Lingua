@@ -16,7 +16,10 @@ import VirtualKeyboard from "./components/VirtualKeyboard";
 
 type WritingState = { item: Item; done: boolean; ok: boolean | null };
 
-const LABELS: Record<"en_tr" | "tr_ru", { src: string; dst: string; ttsSrc: string; ttsDst: string }> = {
+const LABELS: Record<
+  "en_tr" | "tr_ru",
+  { src: string; dst: string; ttsSrc: string; ttsDst: string }
+> = {
   en_tr: { src: "English", dst: "Turkish", ttsSrc: "en-US", ttsDst: "tr-TR" },
   tr_ru: { src: "Turkish", dst: "Russian", ttsSrc: "tr-TR", ttsDst: "ru-RU" },
 };
@@ -54,18 +57,18 @@ export default function WriteMode({
 
   if (!writing) return null;
 
-  // forward: src->dst, reverse: dst->src
-  const expected   = direction === "forward" ? writing.item.dst : writing.item.src;
-  const promptText = direction === "forward" ? writing.item.src : writing.item.dst;
+  // Her zaman: src = soru, dst = beklenen cevap
+  const expected = writing.item.dst;
+  const promptText = writing.item.src;
 
-  const targetLabel = direction === "forward" ? labels.dst : labels.src; // "Translate to X"
+  const targetLabel = direction === "forward" ? labels.dst : labels.src; // sadece başlık
   const help = `Type the ${targetLabel} word or phrase.`;
   const title = `Translate to ${targetLabel}`;
 
   const ttsLang = direction === "forward" ? labels.ttsSrc : labels.ttsDst;
 
-  // Rusça hedefleniyorsa sanal klavyeyi göster
-  const showRuKeyboard = targetLabel === "Russian";
+  // Hedef (dst) Rusça ise klavyeyi göster
+  const showRuKeyboard = datasetKey === "tr_ru" && direction === "forward";
 
   const checkWriting = () => {
     if (!writing || writing.done) return;
@@ -78,14 +81,16 @@ export default function WriteMode({
 
   // Klavye tıklamaları
   const appendText = (t: string) => setInput((prev) => prev + t);
-  const backspace  = () => setInput((prev) => prev.slice(0, -1));
+  const backspace = () => setInput((prev) => prev.slice(0, -1));
 
   return (
     <Card className="backdrop-blur bg-white/40 border-none shadow-lg">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {title}
-          <Badge variant="secondary" className="ml-2">{promptText}</Badge>
+          <Badge variant="secondary" className="ml-2">
+            {promptText}
+          </Badge>
           <Button
             size="icon"
             variant="ghost"
@@ -100,7 +105,11 @@ export default function WriteMode({
 
       <CardContent>
         <motion.div
-          animate={writing.done && writing.ok === false ? { x: [0, -6, 6, -6, 6, 0] } : {}}
+          animate={
+            writing.done && writing.ok === false
+              ? { x: [0, -6, 6, -6, 6, 0] }
+              : {}
+          }
           transition={{ duration: 0.4 }}
           className="flex items-center gap-2"
         >
@@ -112,8 +121,12 @@ export default function WriteMode({
             onKeyDown={(e) => e.key === "Enter" && checkWriting()}
             disabled={writing.done}
           />
-          <Button onClick={checkWriting} disabled={writing.done}>Check</Button>
-          <Button variant="secondary" onClick={nextWriting}>Next</Button>
+          <Button onClick={checkWriting} disabled={writing.done}>
+            Check
+          </Button>
+          <Button variant="secondary" onClick={nextWriting}>
+            Next
+          </Button>
         </motion.div>
 
         {showRuKeyboard && !writing.done && (
@@ -127,7 +140,11 @@ export default function WriteMode({
 
         <div className="mt-3">
           {writing.done ? (
-            <Feedback ok={!!writing.ok} correct={expected} hint={hint(input, expected)} />
+            <Feedback
+              ok={!!writing.ok}
+              correct={expected}
+              hint={hint(input, expected)}
+            />
           ) : (
             <span className="text-sm text-muted-foreground flex items-center gap-2">
               <Keyboard className="w-4 h-4" /> {help}
