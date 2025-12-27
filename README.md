@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# LinguaWrite 🚀
 
-## Getting Started
+**LinguaWrite** is a modern, AI-powered language learning application designed to help you master vocabulary through context-based learning. Built with **Next.js 15**, **React 19**, and powered by **Google Gemini 3 Flash**, it offers a premium, personalized learning experience.
 
-First, run the development server:
+![Project Banner](https://via.placeholder.com/1200x400.png?text=LinguaWrite+Preview)
+*(Note: Screenshots coming soon)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **🤖 AI-Powered Story Mode**: Meet **Linguini**, your AI assistant. It generates unique short stories using your target vocabulary, helping you understand words in context.
+- **📚 Oxford 3000 Integration**: Practice with the most important 3000 words in English, filtered by CEFR levels (A1-C1).
+- **🧠 Spaced Repetition System (SRS)**: Smart algorithms ensure you review words at the perfect time to maximize retention.
+- **🎨 Premium UI/UX**:
+  - **Glassmorphism Design**: Sleek, translucent cards and panels.
+  - **Mesh Gradients**: Dynamic, calming backgrounds.
+  - **Smooth Animations**: Powered by `framer-motion` for a fluid feel.
+- **📱 Fully Responsive**: Optimized for mobile, tablet, and desktop.
+- **🔥 Streak Tracking**: Keep your motivation high with daily practice streaks.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework**: [Next.js 15](https://nextjs.org/) (App Directory)
+- **Library**: [React 19](https://react.dev/)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **AI Model**: [Google Gemini 3 Flash (Preview)](https://ai.google.dev/)
+- **Font**: [Outfit](https://fonts.google.com/specimen/Outfit)
 
-## Learn More
+## 🚀 Getting Started
 
-To learn more about Next.js, take a look at the following resources:
+Follow these steps to set up the project locally:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/Seyyidoter/Lingua.git
+    cd Lingua
+    ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-## Deploy on Vercel
+3.  **Set up Environment Variables:**
+    Create a `.env.local` file in the root directory and add your Gemini API key:
+    ```env
+    GEMINI_API_KEY=your_api_key_here
+    ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4.  **Run the development server:**
+    ```bash
+    npm run dev
+    ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5.  **Open your browser:**
+    Navigate to [http://localhost:3000](http://localhost:3000).
+
+## 🛡️ Security
+
+This project is kept up-to-date with the latest security patches (including React2Shell fixes). We prioritize secure coding practices and dependency management.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+---
+*Built with ❤️ by Seyyidoter*
