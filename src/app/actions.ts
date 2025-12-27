@@ -77,3 +77,40 @@ export async function verifyTranslation(
     return { isCorrect: false, explanation: "AI verification failed." };
   }
 }
+
+// 3. Hikaye Oluşturucu Fonksiyon (YENİ)
+export async function generateStory(
+  words: string[],
+  srcLang: string, // e.g., "English" (The language of the story)
+  dstLang: string, // e.g., "Turkish" (The language for translation)
+  level: string
+) {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
+
+    const prompt = `
+      Write a short, creative, and coherent story (approx. 3-5 sentences) in ${srcLang} suitable for CEFR level ${level}.
+      You MUST use the following words in the context of the story: ${words.join(", ")}.
+      
+      Rules:
+      1. Wrap the target words in **double asterisks** to highlight them (e.g. **word**).
+      2. The story should be engaging.
+      3. Also provide a translation of the story in ${dstLang}.
+
+      Return ONLY a JSON object:
+      { "story": "...", "translation": "..." }
+      Do not add markdown formatting.
+    `;
+
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+    const cleanText = text.replace(/```json|```/g, "").trim();
+
+    return JSON.parse(cleanText);
+
+  } catch (error) {
+    console.error("Gemini API Error (Story):", error);
+    return null;
+  }
+}

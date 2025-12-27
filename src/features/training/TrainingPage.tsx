@@ -10,6 +10,7 @@ import { RotateCcw, Flame } from "lucide-react"; // EKLENDI: Flame ikonu
 import McqMode from "./McqMode";
 import WriteMode from "./WriteMode";
 import ListenMode from "./ListenMode";
+import StoryMode from "./StoryMode";
 
 import { DatasetPicker, Stat, DirectionPicker, LevelPicker } from "./components/SubComponents";
 import { useSRSState } from "@/lib/srs";
@@ -44,7 +45,7 @@ export default function TrainingPage() {
   const [pair, setPair] = useState<DatasetKey>("en_tr");
   const [direction, setDirection] = useState<"forward" | "reverse">("forward");
   const [level, setLevel] = useState<CEFR | "ALL">("ALL");
-  const [tab, setTab] = useState<"mcq" | "write" | "listen">("mcq");
+  const [tab, setTab] = useState<"mcq" | "write" | "listen" | "story">("mcq");
 
   // EKLENDI: Streak hook kullanımı
   const { streak, hasPracticedToday, updateStreak } = useStreak();
@@ -118,12 +119,11 @@ export default function TrainingPage() {
 
           <div className="flex items-center gap-2">
             {/* EKLENDI: Streak Göstergesi */}
-            <div 
-              className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-all ${
-                hasPracticedToday 
-                  ? "bg-orange-100 border-orange-200 text-orange-600 shadow-[0_0_10px_rgba(251,146,60,0.3)]" 
+            <div
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full border transition-all ${hasPracticedToday
+                  ? "bg-orange-100 border-orange-200 text-orange-600 shadow-[0_0_10px_rgba(251,146,60,0.3)]"
                   : "bg-gray-100 border-gray-200 text-gray-400 grayscale"
-              }`}
+                }`}
               title={hasPracticedToday ? "Great job! Streak active." : "Practice to keep the streak!"}
             >
               <Flame className={`w-4 h-4 ${hasPracticedToday ? "fill-orange-500 animate-pulse" : ""}`} />
@@ -152,7 +152,8 @@ export default function TrainingPage() {
           <TabsList className="mb-4 flex gap-2 bg-white/40 backdrop-blur rounded-lg p-1">
             <TabsTrigger value="mcq">Multiple Choice</TabsTrigger>
             <TabsTrigger value="write">Type the Answer</TabsTrigger>
-            <TabsTrigger value="listen">Listen &amp; Translate</TabsTrigger>
+            <TabsTrigger value="listen">Listen & Translate</TabsTrigger>
+            <TabsTrigger value="story">Story of the Day</TabsTrigger>
           </TabsList>
 
           <TabsContent value="mcq">
@@ -185,6 +186,14 @@ export default function TrainingPage() {
               onFinish={finishQuestion}
               datasetKey={pair}
               direction={direction}
+            />
+          </TabsContent>
+
+          <TabsContent value="story">
+            <StoryMode
+              key={`story-${pair}-${direction}-${level}`}
+              data={data}
+              datasetKey={pair}
             />
           </TabsContent>
         </Tabs>
