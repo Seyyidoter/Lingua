@@ -3,7 +3,7 @@
 
 import React from "react";
 // Info ikonu eklendi
-import { Check, X, Info } from "lucide-react"; 
+import { Check, X, Info } from "lucide-react";
 import type { DatasetKey, CEFR } from "@/lib/types";
 
 export function Stat({ label, value }: { label: string; value: string }) {
@@ -16,13 +16,13 @@ export function Stat({ label, value }: { label: string; value: string }) {
 }
 
 export function Feedback({
-  ok, 
-  correct, 
-  hint, 
+  ok,
+  correct,
+  hint,
   explanation // <--- Yeni prop
-}: { 
-  ok: boolean; 
-  correct: string; 
+}: {
+  ok: boolean;
+  correct: string;
   hint?: string;
   explanation?: string | null; // <--- Tip tanımı
 }) {
@@ -57,15 +57,15 @@ export function DatasetPicker({
   value, onChange,
 }: { value: DatasetKey; onChange: (v: DatasetKey) => void }) {
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-muted-foreground">Pair</label>
+    <div className="flex items-center gap-2 bg-white/50 backdrop-blur rounded-lg px-2 py-1 border border-white/20">
+      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:block">Pair</label>
       <select
-        className="border rounded-md px-2 py-1 bg-transparent"
+        className="bg-transparent text-sm font-semibold focus:outline-none py-1 cursor-pointer"
         value={value}
         onChange={(e) => onChange(e.target.value as DatasetKey)}
       >
-        <option value="en_tr">English ↔ Turkish</option>
-        <option value="tr_ru">Turkish ↔ Russian</option>
+        <option value="en_tr">EN ↔ TR</option>
+        <option value="tr_ru">TR ↔ RU</option>
       </select>
     </div>
   );
@@ -84,10 +84,10 @@ export function DirectionPicker({
       : { forward: "TR → RU", reverse: "RU → TR" };
 
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-muted-foreground">Direction</label>
+    <div className="flex items-center gap-2 bg-white/50 backdrop-blur rounded-lg px-2 py-1 border border-white/20">
+      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:block">Dir</label>
       <select
-        className="border rounded-md px-2 py-1 bg-transparent"
+        className="bg-transparent text-sm font-semibold focus:outline-none py-1 cursor-pointer"
         value={value}
         onChange={(e) => onChange(e.target.value as "forward" | "reverse")}
       >
@@ -106,10 +106,10 @@ export function LevelPicker({
   onChange: (v: CEFR | "ALL") => void;
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <label className="text-sm text-muted-foreground">Level</label>
+    <div className="flex items-center gap-2 bg-white/50 backdrop-blur rounded-lg px-2 py-1 border border-white/20">
+      <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider hidden sm:block">Level</label>
       <select
-        className="border rounded-md px-2 py-1 bg-transparent"
+        className="bg-transparent text-sm font-semibold focus:outline-none py-1 cursor-pointer min-w-[3rem]"
         value={value}
         onChange={(e) => onChange(e.target.value as CEFR | "ALL")}
       >
