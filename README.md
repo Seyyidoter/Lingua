@@ -2,8 +2,8 @@
 
 **Linguino** is a modern, AI-powered language learning application designed to help you master vocabulary through context-based learning. Built with **Next.js 15**, **React 19**, and powered by **Google Gemini 3 Flash**, it offers a premium, personalized learning experience.
 
-![Project Banner](https://via.placeholder.com/1200x400.png?text=Linguino+Preview)
-*(Note: Screenshots coming soon)*
+<img width="1319" height="899" alt="image" src="https://github.com/user-attachments/assets/941e9208-333b-4587-a59d-902c819a521a" />
+
 
 ## ✨ Features
 
