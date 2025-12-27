@@ -117,7 +117,7 @@ export default function StoryMode({ data, datasetKey }: StoryModeProps) {
 
             {loading && (
                 <div className="text-center py-12 text-muted-foreground">
-                    <p>Gemini is thinking about a creative plot...</p>
+                    <p>Linguini is thinking about a creative plot...</p>
                 </div>
             )}
 
