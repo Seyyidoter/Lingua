@@ -9,7 +9,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Lingua - Language Learning",
+  title: "Linguino - Language Learning",
   description: "Learn languages with AI-powered stories and exercises.",
 };
 

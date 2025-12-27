@@ -1,8 +1,8 @@
-# LinguaWrite 🚀
+# Linguino 🚀
 
-**LinguaWrite** is a modern, AI-powered language learning application designed to help you master vocabulary through context-based learning. Built with **Next.js 15**, **React 19**, and powered by **Google Gemini 3 Flash**, it offers a premium, personalized learning experience.
+**Linguino** is a modern, AI-powered language learning application designed to help you master vocabulary through context-based learning. Built with **Next.js 15**, **React 19**, and powered by **Google Gemini 3 Flash**, it offers a premium, personalized learning experience.
 
-![Project Banner](https://via.placeholder.com/1200x400.png?text=LinguaWrite+Preview)
+![Project Banner](https://via.placeholder.com/1200x400.png?text=Linguino+Preview)
 *(Note: Screenshots coming soon)*
 
 ## ✨ Features

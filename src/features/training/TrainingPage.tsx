@@ -121,7 +121,7 @@ export default function TrainingPage() {
         <header className="flex flex-col md:flex-row items-center justify-between mb-8 gap-6 md:gap-0">
           <div className="text-center md:text-left">
             <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">
-              LinguaWrite
+              Linguino
             </h1>
             <p className="text-muted-foreground mt-1 text-sm md:text-base">Oxford 3000 • Level-based practice</p>
           </div>
@@ -235,7 +235,7 @@ export default function TrainingPage() {
         </Tabs>
 
         <footer className="mt-12 text-sm text-muted-foreground text-center opacity-60">
-          <p>LinguaWrite &copy; 2025 • Enhanced with Gemini 3</p>
+          <p>Linguino &copy; 2025 • Enhanced with Gemini 3</p>
         </footer>
       </motion.div>
     </div>
