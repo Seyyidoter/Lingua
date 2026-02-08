@@ -42,10 +42,10 @@ export default function WriteMode({
   const [writing, setWriting] = useState<WritingState | null>(null);
   const [input, setInput] = useState<string>("");
   const [isChecking, setIsChecking] = useState(false);
-  
+
   // YENİ STATE: AI Açıklaması
   const [explanation, setExplanation] = useState<string | null>(null);
-  
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const labels = LABELS[datasetKey];
@@ -93,13 +93,13 @@ export default function WriteMode({
 
     // 2. AI Kontrolü
     setIsChecking(true);
-    
+
     const aiResult = await verifyTranslation(
-      writing.item.src,   
-      input,              
-      expected,           
-      sourceLangName,     
-      targetLangName      
+      writing.item.src,
+      input,
+      expected,
+      sourceLangName,
+      targetLangName
     );
 
     setIsChecking(false);
@@ -134,6 +134,12 @@ export default function WriteMode({
             </Badge>
           )}
 
+          {writing.item.level && (
+            <Badge variant="outline" className="ml-2 border-purple-500/50 text-purple-700 bg-purple-50/50 uppercase text-[10px] tracking-wider font-bold">
+              {writing.item.level}
+            </Badge>
+          )}
+
           <Badge variant="secondary" className="ml-2">
             {promptText}
           </Badge>
@@ -165,9 +171,9 @@ export default function WriteMode({
             onChange={(e) => setInput(e.target.value)}
             placeholder="Type here..."
             onKeyDown={(e) => e.key === "Enter" && checkWriting()}
-            disabled={writing.done || isChecking} 
+            disabled={writing.done || isChecking}
           />
-          
+
           <Button onClick={checkWriting} disabled={writing.done || isChecking} className="min-w-[100px]">
             {isChecking ? (
               <>
@@ -208,15 +214,15 @@ export default function WriteMode({
         </div>
 
         <div className="mt-4 border-t border-slate-200/50 pt-4">
-           <SentenceViewer 
-              word={writing.item.src} 
-              pos={writing.item.pos} 
-              level={writing.item.level}
-              srcLang={sourceLangName}
-              dstLang={targetLangName}
-           />
+          <SentenceViewer
+            word={writing.item.src}
+            pos={writing.item.pos}
+            level={writing.item.level}
+            srcLang={sourceLangName}
+            dstLang={targetLangName}
+          />
         </div>
-        
+
       </CardContent>
     </Card>
   );

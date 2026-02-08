@@ -42,10 +42,10 @@ export default function ListenMode({
   const [lsn, setLsn] = useState<ListenState | null>(null);
   const [input, setInput] = useState("");
   const [isChecking, setIsChecking] = useState(false);
-  
+
   // YENİ STATE: AI Açıklaması
   const [explanation, setExplanation] = useState<string | null>(null);
-  
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const labels = LABELS[datasetKey];
@@ -83,7 +83,7 @@ export default function ListenMode({
   const title = `Listen & Translate`;
   const placeholder = `Type the ${listenLangLabel} translation…`;
   const helpText = `Listen to the audio, then type the ${listenLangLabel} meaning.`;
-  
+
   const hintLabel = `Text (${sourceLangName})`;
   const hintText = hintTextOf(lsn.item);
   const dictationText = speakTextOf(lsn.item);
@@ -104,11 +104,11 @@ export default function ListenMode({
     setIsChecking(true);
 
     const aiResult = await verifyTranslation(
-      lsn.item.src,       
-      input,              
-      expected,           
-      sourceLangName,     
-      targetLangName      
+      lsn.item.src,
+      input,
+      expected,
+      sourceLangName,
+      targetLangName
     );
 
     setIsChecking(false);
@@ -137,17 +137,23 @@ export default function ListenMode({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 flex-wrap">
           {title}
-          
+
           {lsn.item.pos && (
             <Badge variant="outline" className="border-sky-500/50 text-sky-700 bg-sky-50/50 uppercase text-[10px] tracking-wider">
               {lsn.item.pos}
             </Badge>
           )}
 
+          {lsn.item.level && (
+            <Badge variant="outline" className="ml-2 border-purple-500/50 text-purple-700 bg-purple-50/50 uppercase text-[10px] tracking-wider font-bold">
+              {lsn.item.level}
+            </Badge>
+          )}
+
           <Badge variant="secondary" className="ml-2">
             {hintLabel}: {hintText}
           </Badge>
-          
+
           <Button
             size="icon"
             variant="ghost"
@@ -176,7 +182,7 @@ export default function ListenMode({
             onKeyDown={(e) => e.key === "Enter" && check()}
             disabled={lsn.done || isChecking}
           />
-          
+
           <Button onClick={check} disabled={lsn.done || isChecking} className="min-w-[100px]">
             {isChecking ? (
               <>
@@ -219,13 +225,13 @@ export default function ListenMode({
         </div>
 
         <div className="mt-4 border-t border-slate-200/50 pt-4">
-           <SentenceViewer 
-              word={lsn.item.src} 
-              pos={lsn.item.pos} 
-              level={lsn.item.level} 
-              srcLang={sourceLangName}
-              dstLang={targetLangName}
-           />
+          <SentenceViewer
+            word={lsn.item.src}
+            pos={lsn.item.pos}
+            level={lsn.item.level}
+            srcLang={sourceLangName}
+            dstLang={targetLangName}
+          />
         </div>
 
       </CardContent>

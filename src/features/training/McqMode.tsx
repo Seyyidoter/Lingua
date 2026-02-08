@@ -128,6 +128,12 @@ export default function McqMode({
             </Badge>
           )}
 
+          {mcq.item.level && (
+            <Badge variant="outline" className="ml-2 border-purple-500/50 text-purple-700 bg-purple-50/50 uppercase text-[10px] tracking-wider font-bold">
+              {mcq.item.level}
+            </Badge>
+          )}
+
           <Badge variant="secondary" className="ml-2">
             {promptText}
           </Badge>
@@ -154,8 +160,8 @@ export default function McqMode({
                   ? "default"
                   : "destructive"
                 : isCorrect
-                ? "default"
-                : "outline"
+                  ? "default"
+                  : "outline"
               : "outline";
             return (
               <motion.div key={i} whileTap={{ scale: 0.98 }}>
@@ -192,13 +198,13 @@ export default function McqMode({
 
         {/* --- AI CÜMLE GETİRİCİ --- */}
         <div className="mt-4 border-t border-slate-200/50 pt-4">
-           <SentenceViewer 
-              word={mcq.item.src} 
-              pos={mcq.item.pos} 
-              level={mcq.item.level} 
-              srcLang={sourceLangName}
-              dstLang={targetLangName}
-           />
+          <SentenceViewer
+            word={mcq.item.src}
+            pos={mcq.item.pos}
+            level={mcq.item.level}
+            srcLang={sourceLangName}
+            dstLang={targetLangName}
+          />
         </div>
         {/* ------------------------- */}
 
