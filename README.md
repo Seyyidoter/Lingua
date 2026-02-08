@@ -41,8 +41,8 @@ Follow these steps to set up the project locally:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/Seyyidoter/Lingua.git
-    cd Lingua
+    git clone https://github.com/Seyyidoter/Linguino.git
+    cd Linguino
     ```
 
 2.  **Install dependencies:**
