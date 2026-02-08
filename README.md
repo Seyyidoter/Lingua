@@ -6,13 +6,7 @@
 
 I built this project to support my younger sibling's English learning journey. Noticing that children their age are reading fewer books, I wanted to create a tool that makes reading fun and relevant. Linguino uses AI to weave the specific words studied each day into entertaining stories, ensuring that vocabulary is practiced in context while keeping the learner engaged as they build their reading habit.
 
-![App Screenshot](https://github.com/user-attachments/assets/941e9208-333b-4587-a59d-902c819a521a)
-
-<!-- 
-Add your new screenshots here! 
-Example:
-![Story Mode Screenshot](https://github.com/user-attachments/assets/your-new-image-id)
--->
+<img width="1363" height="900" alt="image" src="https://github.com/user-attachments/assets/f401045d-62a4-4b57-9472-b56100c91a40" />
 
 ## Features
 
