@@ -17,7 +17,7 @@ Example:
 ## Features
 
 - **AI-Powered Story Mode**: Meet **Linguini**, your AI companion. It generates unique, fun short stories using **the specific words you studied today**, helping you understand vocabulary in context and enjoy reading.
-- **Oxford 3000 Integration**: Practice with the most important 3000 words in English, filtered by CEFR levels (A1-C1).
+- **Oxford 5000+ Integration**: Practice with the most important 5000+ words in English, filtered by CEFR levels (A1-C1).
 - **Spaced Repetition System (SRS)**: Smart algorithms ensure you review words at the perfect time to maximize retention.
 - **Premium UI/UX**:
   - **Glassmorphism Design**: Sleek, translucent cards and panels.

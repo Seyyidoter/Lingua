@@ -123,7 +123,7 @@ export default function TrainingPage() {
             <h1 className="text-4xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-indigo-600">
               Linguino
             </h1>
-            <p className="text-muted-foreground mt-1 text-sm md:text-base">Oxford 3000 • Level-based practice</p>
+            <p className="text-muted-foreground mt-1 text-sm md:text-base">Oxford 5000+ • Level-based practice</p>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-3 w-full md:w-auto">
