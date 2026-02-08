@@ -7,12 +7,15 @@ import { generateStory } from "@/app/actions";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Item, DatasetKey } from "@/lib/types";
 
+import type { SRSApi } from "@/lib/srs";
+
 interface StoryModeProps {
     data: Item[];
     datasetKey: DatasetKey; // "en_tr" or "tr_ru"
+    srs?: SRSApi; // Optional to keep backward compatibility or easy testing
 }
 
-export default function StoryMode({ data, datasetKey }: StoryModeProps) {
+export default function StoryMode({ data, datasetKey, srs }: StoryModeProps) {
     const [targetWords, setTargetWords] = useState<Item[]>([]);
     const [story, setStory] = useState<string | null>(null);
     const [translation, setTranslation] = useState<string | null>(null);
@@ -35,17 +38,57 @@ export default function StoryMode({ data, datasetKey }: StoryModeProps) {
         setStory(null);
         setTranslation(null);
 
-        // 1. Pick 5 random words
-        const shuffled = [...data].sort(() => 0.5 - Math.random());
-        const selected = shuffled.slice(0, 5);
+        // 1. Select words based on priority:
+        // Priority 1: Review needed (mistakes > 0 OR not seen in > 24h)
+        // Priority 2: Learned (mistakes == 0 AND seen recently)
+        // Priority 3: Random (New or others)
+
+        let selected: Item[] = [];
+
+        if (srs && srs.state) {
+            const now = Date.now();
+            const oneDay = 24 * 60 * 60 * 1000;
+
+            const reviewNeeded: Item[] = [];
+            const learned: Item[] = [];
+            const others: Item[] = [];
+
+            data.forEach(item => {
+                const state = srs.state[item.id];
+                if (state) {
+                    const isDue = state.mistakes > 0 || (now - state.lastSeen > oneDay);
+                    if (isDue) {
+                        reviewNeeded.push(item);
+                    } else {
+                        learned.push(item);
+                    }
+                } else {
+                    others.push(item);
+                }
+            });
+
+            // Shuffle each group internally
+            const shuffle = (arr: Item[]) => arr.sort(() => 0.5 - Math.random());
+
+            const p1 = shuffle(reviewNeeded);
+            const p2 = shuffle(learned);
+            const p3 = shuffle(others);
+
+            // Fill up to 5 words
+            selected = [...p1, ...p2, ...p3].slice(0, 5);
+        } else {
+            // Fallback to random if no SRS provided
+            const shuffled = [...data].sort(() => 0.5 - Math.random());
+            selected = shuffled.slice(0, 5);
+        }
+
         setTargetWords(selected);
 
         // 2. Prepare args
         const wordList = selected.map((item) => item.src);
         const { src, dst } = getLangNames();
 
-        // Level is tricky because items might have mixed levels if "ALL" is selected.
-        // Let's grab the level of the first item or default to B1.
+        // Level logic
         const level = selected[0].level || "B1";
 
         // 3. Call AI

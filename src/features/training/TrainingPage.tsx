@@ -229,6 +229,7 @@ export default function TrainingPage() {
                 key={`story-${pair}-${direction}-${level}`}
                 data={data}
                 datasetKey={pair}
+                srs={srs}
               />
             </TabsContent>
           </div>
